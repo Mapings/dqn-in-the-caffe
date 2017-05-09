@@ -2,7 +2,6 @@ layers {
   name: "frames_input_layer"
   type: MEMORY_DATA
   top: "frames"
-  top: "dummy1"
   memory_data_param {
     batch_size: 10
     channels: 1
@@ -10,6 +9,18 @@ layers {
     width: 640
   }
 }
+layers {
+  name: "target_input_layer"
+  type: MEMORY_DATA
+  top: "target"
+  memory_data_param {
+    batch_size: 10
+    channels: 1
+    height: 1
+    width: 1
+  }
+}
+
 layers {
   name: "ip1_layer"
   type: INNER_PRODUCT
@@ -36,7 +47,7 @@ layers {
   name: "ip2_layer"
   type: INNER_PRODUCT
   bottom: "ip1"
-  top: "p_values"
+  top: "log_p_values"
   inner_product_param {
     num_output: 1
     weight_filler {
@@ -47,17 +58,14 @@ layers {
 }
 layer {
   name: "sigmoid"
-  bottom: "p_value"
+  bottom: "log_p_values"
   top: "p_value"
   type: "Sigmoid"
 }
-
 layer {
   name: "loss"
   type: "SigmoidCrossEntropyLoss"
-  bottom: "p_values"
-  bottom: "label"
+  bottom: "log_p_values"
+  bottom: "target"
   top: "loss"
 }
-//缺少label层
-//缺少输出层
